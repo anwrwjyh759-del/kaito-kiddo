@@ -176,40 +176,59 @@
       </button>
     </header>
 
-    <!-- شاشة الدخول للطلاب -->
+    <!-- شاشة الدخول -->
     <section id="loginScreen">
       <div class="card hero">
         <h2>أهلاً بيك 👋</h2>
-        <p>سجّل اسمك، وتابع نقاطك وترتيبك.</p>
+        <p>سجّل دخولك للانضمام إلى لوحة الترتيب.</p>
       </div>
 
+      <!-- دخول الشباب -->
       <div class="card">
         <h3 class="section-title">
           <i class="fa-solid fa-user"></i>
-          الدخول
+          دخول الشباب
         </h3>
 
         <div class="field">
           <label for="studentNameInput">اكتب اسمك الثلاثي (هيتقفل ومش هيتغير)</label>
-          <input id="studentNameInput" type="text" placeholder="">
+          <input id="studentNameInput" type="text" placeholder="مثال: أنور وجيه فهمي">
         </div>
 
         <button class="btn" id="googleLoginBtn" style="background: linear-gradient(135deg, #4285f4, #357ae8);">
           <i class="fa-brands fa-google"></i>
           تابع باستخدام جوجل
         </button>
-
         <div id="loginMessage" class="notice hidden" style="margin-top:13px"></div>
+      </div>
+
+      <!-- دخول الخدام -->
+      <div class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          دخول الخدام
+        </h3>
+
+        <div class="field">
+          <label for="teacherPassword">كلمة مرور الخدام</label>
+          <input id="teacherPassword" type="password" placeholder="اكتب كلمة المرور">
+        </div>
+
+        <button class="btn secondary" id="teacherLoginBtn">
+          <i class="fa-solid fa-briefcase"></i>
+          تسجيل دخول الخدام
+        </button>
+        <div id="teacherLoginMessage" class="notice hidden" style="margin-top:13px"></div>
       </div>
 
       <div class="footer">سجل الحضور • نظام النقاط والترتيب</div>
     </section>
 
-    <!-- واجهة الإدارة -->
+    <!-- واجهة الإدارة (للمطور فقط) -->
     <section id="adminScreen" class="hidden">
       <div class="card hero">
-        <h2>لوحة الإدارة</h2>
-        <p>سجّل الحضور والخدمة والأنشطة، والنقاط هتتجمع تلقائيًا.</p>
+        <h2>لوحة تحكم المطور</h2>
+        <p>إدارة كاملة للسجلات والصلاحيات.</p>
       </div>
 
       <div class="card">
@@ -217,13 +236,11 @@
           <i class="fa-solid fa-circle-plus"></i>
           تسجيل حضور جديد
         </h3>
-
         <form id="attendanceForm">
           <div class="field">
             <label for="attendeeName">الاسم الثلاثي</label>
             <input id="attendeeName" type="text" placeholder="اكتب الاسم الثلاثي" required>
           </div>
-
           <div class="field">
             <label for="attendanceType">نوع الحضور</label>
             <select id="attendanceType">
@@ -232,18 +249,12 @@
               <option value="activity">النشاط — 30 نقطة</option>
             </select>
           </div>
-
           <div class="field">
             <label for="attendanceDate">تاريخ الحضور</label>
             <input id="attendanceDate" type="date" required>
           </div>
-
-          <button class="btn success" type="submit">
-            <i class="fa-solid fa-check"></i>
-            تسجيل وإضافة النقاط
-          </button>
+          <button class="btn success" type="submit"><i class="fa-solid fa-check"></i> تسجيل وإضافة النقاط</button>
         </form>
-
         <div id="adminMessage" class="notice hidden" style="margin-top:13px"></div>
       </div>
 
@@ -252,58 +263,73 @@
           <i class="fa-solid fa-chart-column"></i>
           ملخص السجل
         </h3>
-
         <div class="stats-grid">
           <div class="stat"><strong id="adminPeopleCount">0</strong><span>الأعضاء</span></div>
           <div class="stat"><strong id="adminEventsCount">0</strong><span>السجلات</span></div>
           <div class="stat"><strong id="adminPointsCount">0</strong><span>النقاط</span></div>
         </div>
-
         <div class="divider"></div>
-
         <div class="field">
           <label for="adminSearch">البحث في السجلات</label>
           <input id="adminSearch" type="search" placeholder="ابحث بالاسم...">
         </div>
-
         <div id="adminRecordsList"></div>
-
         <div class="divider"></div>
-
         <div class="btn-row">
-          <button class="btn secondary" id="exportCsv">
-            <i class="fa-solid fa-file-csv"></i>
-            تصدير CSV
-          </button>
-          <button class="btn secondary" id="adminLogout">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            خروج
-          </button>
+          <button class="btn secondary" id="exportCsv"><i class="fa-solid fa-file-csv"></i> تصدير CSV</button>
+          <button class="btn secondary" id="adminLogout"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
         </div>
-
-        <button class="btn danger" id="wipeAll" style="margin-top:12px">
-          <i class="fa-solid fa-trash"></i>
-          مسح جميع السجلات
-        </button>
+        <button class="btn danger" id="wipeAll" style="margin-top:12px"><i class="fa-solid fa-trash"></i> مسح جميع السجلات</button>
       </div>
     </section>
 
-    <!-- واجهة الطالب -->
+    <!-- واجهة الخادم (إضافة نقاط فقط) -->
+    <section id="teacherScreen" class="hidden">
+      <div class="card hero">
+        <h2>لوحة الخدام</h2>
+        <p>أهلاً بك، يمكنك تسجيل الحضور للشباب.</p>
+      </div>
+      <div class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-circle-plus"></i>
+          تسجيل حضور جديد
+        </h3>
+        <form id="teacherAttendanceForm">
+          <div class="field">
+            <label for="teacherAttendeeName">الاسم الثلاثي</label>
+            <input id="teacherAttendeeName" type="text" placeholder="اكتب الاسم الثلاثي" required>
+          </div>
+          <div class="field">
+            <label for="teacherAttendanceType">نوع الحضور</label>
+            <select id="teacherAttendanceType">
+              <option value="mass">القداس — 50 نقطة</option>
+              <option value="service">الخدمة — 30 نقطة</option>
+              <option value="activity">النشاط — 30 نقطة</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="teacherAttendanceDate">تاريخ الحضور</label>
+            <input id="teacherAttendanceDate" type="date" required>
+          </div>
+          <button class="btn success" type="submit"><i class="fa-solid fa-check"></i> تسجيل وإضافة النقاط</button>
+        </form>
+        <div id="teacherMessage" class="notice hidden" style="margin-top:13px"></div>
+        <button class="btn secondary" id="teacherLogout" style="margin-top:15px"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+      </div>
+    </section>
+
+    <!-- واجهة الشاب -->
     <section id="studentScreen" class="hidden">
       <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
           <span class="badge">
             <span class="connection-dot" id="connectionDot"></span>
             <span id="connectionText">جاري الاتصال</span>
           </span>
-          <!-- زرار الخروج للمطور (مخفي افتراضياً) -->
-          <button class="btn danger small hidden" id="devExitBtn" style="width:auto; padding: 5px 10px; font-size: 11px;">
-            <i class="fa-solid fa-door-open"></i> خروج المطور
-          </button>
         </div>
 
         <div style="margin-top:20px">
-          <div class="profile-name" id="profileName">اسم الطالب</div>
+          <div class="profile-name" id="profileName">اسم الشاب</div>
           <div class="profile-subtitle" id="profileEmail">البريد الإلكتروني</div>
 
           <div class="points-circle">
@@ -320,20 +346,12 @@
       </div>
 
       <div class="tabs">
-        <button class="tab active" data-tab="leaderboard">
-          <i class="fa-solid fa-trophy"></i> لوحة الترتيب
-        </button>
-        <button class="tab" data-tab="profile">
-          <i class="fa-solid fa-user"></i> ملفي الشخصي
-        </button>
+        <button class="tab active" data-tab="leaderboard"><i class="fa-solid fa-trophy"></i> لوحة الترتيب</button>
+        <button class="tab" data-tab="profile"><i class="fa-solid fa-user"></i> ملفي الشخصي</button>
       </div>
 
       <div id="leaderboardTab" class="card">
-        <h3 class="section-title">
-          <i class="fa-solid fa-ranking-star"></i>
-          ترتيب الأعضاء
-        </h3>
-
+        <h3 class="section-title"><i class="fa-solid fa-ranking-star"></i> ترتيب الأعضاء</h3>
         <div class="table-tools">
           <input id="leaderSearch" type="search" placeholder="ابحث عن اسم...">
           <select id="leaderSort">
@@ -341,35 +359,20 @@
             <option value="name">الاسم أبجديًا</option>
           </select>
         </div>
-
         <div id="leaderboardList"></div>
       </div>
 
       <div id="profileTab" class="card hidden">
-        <h3 class="section-title">
-          <i class="fa-solid fa-address-card"></i>
-          بيانات ملفي
-        </h3>
-
-        <div class="notice">
-          النقاط المعروضة هنا محسوبة من سجلات الحضور التي سجلها المسؤول.
-        </div>
-
-        <div class="field">
-          <label>الاسم المسجل</label>
-          <input id="profileNameReadOnly" type="text" readonly>
-        </div>
-
-        <div class="field">
-          <label>إجمالي النقاط</label>
-          <input id="profilePointsReadOnly" type="text" readonly>
-        </div>
-
-        <div class="field">
-          <label>ترتيبك بين الأعضاء</label>
-          <input id="profileRankReadOnly" type="text" readonly>
-        </div>
+        <h3 class="section-title"><i class="fa-solid fa-address-card"></i> بيانات ملفي</h3>
+        <div class="notice">النقاط المعروضة هنا محسوبة من سجلات الحضور التي سجلها المسؤول.</div>
+        <div class="field"><label>الاسم المسجل</label><input id="profileNameReadOnly" type="text" readonly></div>
+        <div class="field"><label>إجمالي النقاط</label><input id="profilePointsReadOnly" type="text" readonly></div>
+        <div class="field"><label>ترتيبك بين الأعضاء</label><input id="profileRankReadOnly" type="text" readonly></div>
       </div>
+
+      <button class="btn danger hidden" id="devExitBtn" style="margin-top: 10px; padding: 15px; font-size: 14px;">
+        <i class="fa-solid fa-door-open"></i> تسجيل الخروج (للمطور)
+      </button>
     </section>
 
     <footer class="footer">
@@ -377,18 +380,13 @@
       <br>
       <span id="storageStatus">تهيئة قاعدة البيانات...</span>
     </footer>
-
   </main>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
   <script>
-    // ==========================================
-    // Firebase Config
-    // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyDUDqIZErJC6EXjvoPT06mAwmZyhM59hkY",
       authDomain: "kaito-kiddo.firebaseapp.com",
@@ -406,20 +404,16 @@
     const recordsRef = db.ref("attendance/records");
 
     // ==========================================
-    // إيميلات المسؤول/المطور
+    // إعدادات الكنيسة والصلاحيات
     // ==========================================
     const ADMIN_EMAIL = "anwrwjyh759@gmail.com"; 
     const DEV_EMAILS = ["anwrwjyh759@gmail.com", "anwarwagih815@gmail.com"];
+    const TEACHER_PASSWORD = "250746"; // باسوورد الخدام
+    let wrongTeacherAttempts = 0; // عداد المحاولات الغلط
 
-    // ==========================================
-    // ثوابت
-    // ==========================================
     const POINTS = { mass: 50, service: 30, activity: 30 };
     const TYPE_LABELS = { mass: "القداس", service: "الخدمة", activity: "النشاط" };
 
-    // ==========================================
-    // تطبيع الأسماء
-    // ==========================================
     const ARABIC_SOUND_MAP = {
       "th":"ث","sh":"ش","ch":"ش","kh":"خ","gh":"غ","ph":"ف","aa":"ا","ee":"ي","oo":"و","ou":"و",
       "ai":"ي","ay":"ي","ey":"ي","ei":"ي","ie":"ي","a":"ا","b":"ب","c":"ك","d":"د","e":"ي","f":"ف",
@@ -451,18 +445,17 @@
       return s;
     }
 
-    // ==========================================
-    // State
-    // ==========================================
     let allRecords = [];
     let currentUser = null;
-    let isAdmin = false;
+    let userRole = "student"; // student, teacher, admin
+    let loginMode = "student"; // student, teacher
 
     const $ = (id) => document.getElementById(id);
 
     const screens = {
       login: $("loginScreen"),
       admin: $("adminScreen"),
+      teacher: $("teacherScreen"),
       student: $("studentScreen")
     };
 
@@ -471,9 +464,6 @@
       screens[name].classList.remove("hidden");
     }
 
-    // ==========================================
-    // الوضع الليلي
-    // ==========================================
     const themeBtn = $("themeBtn");
     if (localStorage.getItem("theme") === "light") {
       document.body.classList.add("light");
@@ -483,102 +473,130 @@
       document.body.classList.toggle("light");
       const isLight = document.body.classList.contains("light");
       localStorage.setItem("theme", isLight ? "light" : "dark");
-      themeBtn.innerHTML = isLight
-        ? '<i class="fa-solid fa-sun"></i>'
-        : '<i class="fa-solid fa-moon"></i>';
+      themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     });
 
     // ==========================================
-    // تسجيل الدخول بجوجل (للطلاب)
+    // تسجيل الدخول للشباب (جوجل)
     // ==========================================
     $("googleLoginBtn").addEventListener("click", () => {
-      const msg = $("loginMessage");
       const nameInput = $("studentNameInput").value.trim();
-      
       if (nameInput.length < 3) {
-        msg.className = "notice error-notice";
-        msg.textContent = "لازم تكتب اسمك الثلاثي الأول عشان تقدر تكمل.";
-        msg.classList.remove("hidden");
+        $("loginMessage").className = "notice error-notice";
+        $("loginMessage").textContent = "لازم تكتب اسمك الثلاثي الأول.";
+        $("loginMessage").classList.remove("hidden");
         return;
       }
-
-      msg.classList.add("hidden");
+      $("loginMessage").classList.add("hidden");
       sessionStorage.setItem("tempStudentName", nameInput);
-
-      auth.signInWithPopup(provider)
-        .catch((error) => {
-          msg.className = "notice error-notice";
-          msg.textContent = "خطأ في الدخول: " + error.message;
-          msg.classList.remove("hidden");
-        });
+      loginMode = "student";
+      
+      auth.signInWithRedirect(provider).catch((error) => {
+        $("loginMessage").className = "notice error-notice";
+        $("loginMessage").textContent = "خطأ في الدخول: " + error.message;
+        $("loginMessage").classList.remove("hidden");
+      });
     });
 
     // ==========================================
-    // مراقبة حالة تسجيل الدخول
+    // تسجيل الدخول للخدام (بالباسوورد)
+    // ==========================================
+    $("teacherLoginBtn").addEventListener("click", () => {
+      const pass = $("teacherPassword").value.trim();
+      
+      if (pass === TEACHER_PASSWORD) {
+        // لو الباسوورد صح
+        wrongTeacherAttempts = 0;
+        $("teacherLoginMessage").classList.add("hidden");
+        $("teacherPassword").value = "";
+        userRole = "teacher";
+        showScreen("teacher");
+        $("teacherAttendanceDate").valueAsDate = new Date();
+      } else {
+        // لو الباسوورد غلط
+        wrongTeacherAttempts++;
+        $("teacherLoginMessage").className = "notice error-notice";
+        
+        if (wrongTeacherAttempts >= 2) {
+          // لو غلط مرتين متتاليتين، دخله كشاب
+          $("teacherLoginMessage").textContent = "لقد أدخلت كلمة المرور خطأ مرتين. سيتم توجيهك لصفحة الشباب.";
+          $("teacherLoginMessage").classList.remove("hidden");
+          wrongTeacherAttempts = 0; // تصفير العداد
+          
+          // توجيه تلقائي لصفحة الشباب
+          setTimeout(() => {
+            userRole = "student";
+            showScreen("student");
+            $("profileName").textContent = "شاب (دخول تلقائي)";
+            $("profileEmail").textContent = "يرجى تسجيل الدخول بحساب جوجل للربط";
+          }, 1500);
+        } else {
+          $("teacherLoginMessage").textContent = "كلمة المرور غير صحيحة. محاولة واحدة متبقية.";
+          $("teacherLoginMessage").classList.remove("hidden");
+        }
+      }
+    });
+
+    // قراءة النتيجة بعد الـ Redirect
+    auth.getRedirectResult().then((result) => {
+      // الكود هيكمل في onAuthStateChanged
+    }).catch((error) => {
+      console.error(error);
+    });
+
+    // ==========================================
+    // مراقبة حالة تسجيل الدخول (للشباب فقط)
     // ==========================================
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
-        isAdmin = (user.email === ADMIN_EMAIL);
-
-        if (isAdmin) {
+        
+        if (user.email === ADMIN_EMAIL) {
+          userRole = "admin";
           showScreen("admin");
+          $("attendanceDate").valueAsDate = new Date();
         } else {
-          showScreen("student");
-          
-          // كود إظهار زرار الخروج للمطورين فقط
-          if (DEV_EMAILS.includes(user.email)) {
-            $("devExitBtn").classList.remove("hidden");
-          } else {
-            $("devExitBtn").classList.add("hidden");
-          }
+          // لو دخل عن طريق جوجل، يبقى شاب
+          if (userRole !== "teacher") {
+            userRole = "student";
+            showScreen("student");
+            
+            if (DEV_EMAILS.includes(user.email)) {
+              $("devExitBtn").classList.remove("hidden");
+            } else {
+              $("devExitBtn").classList.add("hidden");
+            }
 
-          const tempName = sessionStorage.getItem("tempStudentName");
-          if (!localStorage.getItem("name_" + user.uid)) {
-             localStorage.setItem("name_" + user.uid, tempName || user.displayName || user.email.split("@")[0]);
+            const tempName = sessionStorage.getItem("tempStudentName");
+            if (!localStorage.getItem("name_" + user.uid)) {
+               localStorage.setItem("name_" + user.uid, tempName || user.displayName || user.email.split("@")[0]);
+            }
+            $("profileEmail").textContent = user.email;
+            renderStudentView();
           }
-
-          $("profileEmail").textContent = user.email;
-          renderStudentView();
         }
       } else {
         currentUser = null;
-        isAdmin = false;
-        showScreen("login");
+        if (userRole !== "teacher") {
+          userRole = "student";
+          showScreen("login");
+        }
       }
     });
 
-    // ==========================================
-    // خروج المسؤول
-    // ==========================================
+    // خروج
     $("adminLogout").addEventListener("click", () => auth.signOut());
+    $("teacherLogout").addEventListener("click", () => { userRole = "student"; showScreen("login"); });
+    $("devExitBtn").addEventListener("click", () => { auth.signOut(); localStorage.clear(); });
 
     // ==========================================
-    // خروج المطور (للطلاب المطورين فقط)
+    // دوال حفظ الحضور
     // ==========================================
-    $("devExitBtn").addEventListener("click", () => {
-      auth.signOut();
-      localStorage.clear(); // بيمسح الاسم عشان تقدر تدخل بحساب تاني
-    });
-
-    // ==========================================
-    // تسجيل حضور (للمسؤول فقط)
-    // ==========================================
-    $("attendanceDate").valueAsDate = new Date();
-
-    $("attendanceForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!isAdmin) { alert("لازم تكون مسؤول"); return; }
-
-      const name = $("attendeeName").value.trim();
-      const type = $("attendanceType").value;
-      const date = $("attendanceDate").value;
-      const msg = $("adminMessage");
-
+    async function saveAttendance(name, type, date, msgEl) {
       if (!name || !date) {
-        msg.className = "notice error-notice";
-        msg.textContent = "لازم تكتب الاسم والتاريخ";
-        msg.classList.remove("hidden");
+        msgEl.className = "notice error-notice";
+        msgEl.textContent = "لازم تكتب الاسم والتاريخ";
+        msgEl.classList.remove("hidden");
         return;
       }
 
@@ -590,125 +608,75 @@
 
       try {
         await recordsRef.push({
-          name,
-          nameKey: normalizedKey,
-          type,
-          points: POINTS[type],
-          date,
-          timestamp: Date.now()
+          name, nameKey: normalizedKey, type, points: POINTS[type], date, timestamp: Date.now()
         });
-
-        msg.className = "notice success-notice";
-        msg.textContent = `✅ تم تسجيل حضور "${name}" — ${POINTS[type]} نقطة`;
-        msg.classList.remove("hidden");
-        $("attendeeName").value = "";
-        setTimeout(() => msg.classList.add("hidden"), 4000);
+        msgEl.className = "notice success-notice";
+        msgEl.textContent = `✅ تم تسجيل حضور "${name}" — ${POINTS[type]} نقطة`;
+        msgEl.classList.remove("hidden");
+        setTimeout(() => msgEl.classList.add("hidden"), 4000);
+        return true;
       } catch (err) {
-        msg.className = "notice error-notice";
-        msg.textContent = "خطأ في الحفظ: " + err.message;
-        msg.classList.remove("hidden");
+        msgEl.className = "notice error-notice";
+        msgEl.textContent = "خطأ في الحفظ: " + err.message;
+        msgEl.classList.remove("hidden");
+        return false;
       }
+    }
+
+    // فورم المطور
+    $("attendanceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (userRole !== "admin") return;
+      const success = await saveAttendance(
+        $("attendeeName").value.trim(), $("attendanceType").value, $("attendanceDate").value, $("adminMessage")
+      );
+      if (success) $("attendeeName").value = "";
     });
 
-    // ==========================================
-    // مسح السجلات
-    // ==========================================
+    // فورم الخادم
+    $("teacherAttendanceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (userRole !== "teacher" && userRole !== "admin") return;
+      const success = await saveAttendance(
+        $("teacherAttendeeName").value.trim(), $("teacherAttendanceType").value, $("teacherAttendanceDate").value, $("teacherMessage")
+      );
+      if (success) $("teacherAttendeeName").value = "";
+    });
+
+    // مسح وتصدير (للمطور فقط)
     $("wipeAll").addEventListener("click", async () => {
-      if (!isAdmin) { alert("لازم تكون مسؤول"); return; }
-      if (!confirm("متأكد؟ هيتم مسح كل السجلات ولا يمكن التراجع.")) return;
-      if (!confirm("تأكيد نهائي: امسح الكل؟")) return;
-      try {
-        await recordsRef.remove();
-        alert("تم المسح");
-      } catch (err) {
-        alert("خطأ: " + err.message);
-      }
+      if (userRole !== "admin") return;
+      if (!confirm("متأكد؟ هيتم مسح كل السجلات نهائياً.")) return;
+      try { await recordsRef.remove(); alert("تم المسح"); } catch (err) { alert("خطأ: " + err.message); }
     });
 
-    // ==========================================
-    // تصدير CSV
-    // ==========================================
     $("exportCsv").addEventListener("click", () => {
-      if (!allRecords.length) { alert("مفيش سجلات"); return; }
+      if (!allRecords.length) return alert("مفيش سجلات");
       const rows = [["الاسم", "النوع", "النقاط", "التاريخ"]];
       allRecords.forEach(r => rows.push([r.name, TYPE_LABELS[r.type] || r.type, r.points, r.date]));
       const csv = "\uFEFF" + rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `attendance-${Date.now()}.csv`;
-      a.click();
+      a.href = URL.createObjectURL(blob); a.download = `attendance-${Date.now()}.csv`; a.click();
     });
 
     // ==========================================
-    // الاتصال والاستماع للسجلات
+    // المزامنة والقراءة من فايربيس
     // ==========================================
-    function setConnection(online) {
-      const dot = $("connectionDot");
-      const text = $("connectionText");
-      if (!dot) return;
-      dot.classList.toggle("offline", !online);
-      text.textContent = online ? "متصل" : "غير متصل";
-    }
-
     db.ref(".info/connected").on("value", (snap) => {
-      setConnection(!!snap.val());
-      $("storageStatus").textContent = snap.val()
-        ? "✅ متصل بقاعدة البيانات"
-        : "⚠️ غير متصل";
+      const dot = $("connectionDot"); const text = $("connectionText");
+      if (dot) { dot.classList.toggle("offline", !snap.val()); text.textContent = snap.val() ? "متصل" : "غير متصل"; }
+      $("storageStatus").textContent = snap.val() ? "✅ متصل بقاعدة البيانات" : "⚠️ غير متصل";
     });
 
     recordsRef.on("value", (snapshot) => {
       const val = snapshot.val() || {};
       allRecords = Object.entries(val).map(([id, r]) => ({ id, ...r }));
       allRecords.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      if (isAdmin) updateAdminView();
-      if (currentUser && !isAdmin) renderStudentView();
-    }, (err) => {
-      console.error("Firebase error:", err);
-      $("storageStatus").textContent = "❌ خطأ: " + err.message;
+      if (userRole === "admin") updateAdminView();
+      if (userRole === "student") renderStudentView();
     });
 
-    // ==========================================
-    // بناء الليدر بورد
-    // ==========================================
-    function buildLeaderboard() {
-      const map = new Map();
-      allRecords.forEach(r => {
-        const key = r.nameKey || normalizeName(r.name);
-        if (!key) return;
-        if (!map.has(key)) {
-          map.set(key, {
-            name: r.name,
-            points: 0,
-            events: 0,
-            days: new Set(),
-            firstTimestamp: r.timestamp || 0
-          });
-        }
-        const entry = map.get(key);
-        entry.points += r.points || 0;
-        entry.events += 1;
-        entry.days.add(r.date);
-        if ((r.timestamp || 0) < entry.firstTimestamp) {
-          entry.name = r.name;
-          entry.firstTimestamp = r.timestamp || 0;
-        }
-      });
-      const arr = [...map.values()].map(e => ({
-        name: e.name,
-        points: e.points,
-        events: e.events,
-        days: e.days.size
-      }));
-      arr.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name, "ar"));
-      arr.forEach((e, i) => e.rank = i + 1);
-      return arr;
-    }
-
-    // ==========================================
-    // واجهة الإدارة
-    // ==========================================
     function updateAdminView() {
       const board = buildLeaderboard();
       $("adminPeopleCount").textContent = board.length;
@@ -721,124 +689,89 @@
 
     function renderAdminRecords() {
       const q = normalizeName($("adminSearch").value);
+      const filtered = allRecords.filter(r => !q || (r.nameKey || normalizeName(r.name)).includes(q));
       const list = $("adminRecordsList");
-      const filtered = allRecords.filter(r => {
-        if (!q) return true;
-        return (r.nameKey || normalizeName(r.name)).includes(q);
-      });
 
-      if (!filtered.length) {
-        list.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i>لا توجد سجلات</div>`;
-        return;
-      }
+      if (!filtered.length) { list.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i>لا توجد سجلات</div>`; return; }
 
-      // تجميع السجلات حسب الاسم عشان تظهر في كارت واحد
       const grouped = {};
       filtered.forEach(r => {
         const key = r.nameKey || normalizeName(r.name);
-        if (!grouped[key]) {
-          grouped[key] = { name: r.name, points: 0, records: [] };
-        }
+        if (!grouped[key]) grouped[key] = { name: r.name, points: 0, records: [] };
         grouped[key].points += r.points || 0;
         grouped[key].records.push(r);
       });
 
       list.innerHTML = Object.values(grouped).map(g => {
-        const details = g.records.map(r => 
-          `<small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>`
-        ).join('');
-        
-        // بناخد أول ID في السجلات عشان لما ندوس حذف، نمسحهم كلهم
+        const details = g.records.map(r => `<small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>`).join('');
         const recordIds = g.records.map(r => r.id).join(',');
-
         return `
           <div class="admin-record">
             <strong>${escapeHtml(g.name)} <span style="color:var(--secondary);font-size:12px">(${g.points} نقطة)</span></strong>
-            <div class="admin-record-details">
-              ${details}
-            </div>
-            <button class="btn danger small" data-del="${recordIds}">
-              <i class="fa-solid fa-trash"></i> حذف كل السجلات
-            </button>
-          </div>
-        `;
+            <div class="admin-record-details">${details}</div>
+            <button class="btn danger small" data-del="${recordIds}"><i class="fa-solid fa-trash"></i> حذف كل السجلات</button>
+          </div>`;
       }).join("");
 
       list.querySelectorAll("[data-del]").forEach(btn => {
         btn.addEventListener("click", async () => {
-          if (!confirm("حذف كل السجلات لهذا الشخص؟")) return;
-          if (!isAdmin) return;
-          const ids = btn.dataset.del.split(',');
-          // بيمسح كل السجلات اللي تخص الشخص ده
-          for (const id of ids) {
-            await recordsRef.child(id).remove();
-          }
+          if (!confirm("حذف كل السجلات لهذا الشخص؟") || userRole !== "admin") return;
+          for (const id of btn.dataset.del.split(',')) await recordsRef.child(id).remove();
         });
       });
     }
 
-    // ==========================================
-    // واجهة الطالب
-    // ==========================================
+    function buildLeaderboard() {
+      const map = new Map();
+      allRecords.forEach(r => {
+        const key = r.nameKey || normalizeName(r.name);
+        if (!key) return;
+        if (!map.has(key)) map.set(key, { name: r.name, points: 0, events: 0, days: new Set(), firstTimestamp: r.timestamp || 0 });
+        const entry = map.get(key);
+        entry.points += r.points || 0; entry.events += 1; entry.days.add(r.date);
+        if ((r.timestamp || 0) < entry.firstTimestamp) { entry.name = r.name; entry.firstTimestamp = r.timestamp || 0; }
+      });
+      const arr = [...map.values()].map(e => ({ name: e.name, points: e.points, events: e.events, days: e.days.size }));
+      arr.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name, "ar"));
+      arr.forEach((e, i) => e.rank = i + 1);
+      return arr;
+    }
+
     function renderStudentView() {
       if (!currentUser) return;
       const board = buildLeaderboard();
-      
-      const myName = localStorage.getItem("name_" + currentUser.uid) || "طالب";
-      const myKey = normalizeName(myName);
-      const me = board.find(p => normalizeName(p.name) === myKey);
+      const myName = localStorage.getItem("name_" + currentUser.uid) || "شاب";
+      const me = board.find(p => normalizeName(p.name) === normalizeName(myName));
 
-      $("profileName").textContent = myName;
-      $("profileNameReadOnly").value = myName;
-
+      $("profileName").textContent = myName; $("profileNameReadOnly").value = myName;
       if (me) {
-        $("studentPoints").textContent = me.points;
-        $("studentRank").textContent = me.rank;
-        $("studentEvents").textContent = me.events;
-        $("studentDays").textContent = me.days;
+        $("studentPoints").textContent = me.points; $("studentRank").textContent = me.rank;
+        $("studentEvents").textContent = me.events; $("studentDays").textContent = me.days;
         $("profilePointsReadOnly").value = me.points + " نقطة";
         $("profileRankReadOnly").value = `#${me.rank} من ${board.length}`;
       } else {
-        $("studentPoints").textContent = "0";
-        $("studentRank").textContent = "—";
-        $("studentEvents").textContent = "0";
-        $("studentDays").textContent = "0";
-        $("profilePointsReadOnly").value = "0 نقطة";
-        $("profileRankReadOnly").value = "لسه مسجلش حضور";
+        $("studentPoints").textContent = "0"; $("studentRank").textContent = "—"; $("studentEvents").textContent = "0"; $("studentDays").textContent = "0";
+        $("profilePointsReadOnly").value = "0 نقطة"; $("profileRankReadOnly").value = "لسه مسجلش حضور";
       }
-
       renderLeaderboard(board);
     }
 
-    // ==========================================
-    // الليدر بورد
-    // ==========================================
     $("leaderSearch").addEventListener("input", () => renderLeaderboard());
     $("leaderSort").addEventListener("change", () => renderLeaderboard());
 
     function renderLeaderboard(board) {
       board = board || buildLeaderboard();
-      const q = normalizeName($("leaderSearch").value);
-      const sort = $("leaderSort").value;
-
+      const q = normalizeName($("leaderSearch").value); const sort = $("leaderSort").value;
       let list = board.filter(p => !q || normalizeName(p.name).includes(q));
       if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name, "ar"));
 
       const container = $("leaderboardList");
-      if (!list.length) {
-        container.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i>لا يوجد أعضاء</div>`;
-        return;
-      }
+      if (!list.length) { container.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i>لا يوجد أعضاء</div>`; return; }
 
       container.innerHTML = list.map(p => {
-        let rankCls = "";
-        if (p.rank === 1) rankCls = "gold";
-        else if (p.rank === 2) rankCls = "silver";
-        else if (p.rank === 3) rankCls = "bronze";
-        
+        let rankCls = p.rank === 1 ? "gold" : p.rank === 2 ? "silver" : p.rank === 3 ? "bronze" : "";
         const myName = currentUser ? (localStorage.getItem("name_" + currentUser.uid) || "") : "";
         const isMe = normalizeName(p.name) === normalizeName(myName);
-        
         return `
           <div class="leader-row" style="${isMe ? 'background:var(--card2);border-radius:12px' : ''}">
             <div class="rank ${rankCls}">${p.rank}</div>
@@ -851,9 +784,6 @@
       }).join("");
     }
 
-    // ==========================================
-    // تابات
-    // ==========================================
     document.querySelectorAll(".tab").forEach(tab => {
       tab.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -864,14 +794,7 @@
       });
     });
 
-    // ==========================================
-    // Utils
-    // ==========================================
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[c]));
-    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
   </script>
 </body>
 </html>
