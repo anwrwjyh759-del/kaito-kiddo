@@ -143,7 +143,7 @@
         </h3>
         <div class="field">
           <label for="studentNameInput">اكتب اسمك الثلاثي (هيتقفل ومش هيتغير)</label>
-          <input id="studentNameInput" type="text" placeholder=" ">
+          <input id="studentNameInput" type="text" placeholder="">
         </div>
         <button class="btn" id="googleLoginBtn" style="background: linear-gradient(135deg, #4285f4, #357ae8);">
           <i class="fa-brands fa-google"></i> تابع باستخدام جوجل
@@ -212,7 +212,7 @@
       </div>
     </section>
 
-    <!-- واجهة الخادم (تشمل الليدر بورد والإضافة والحذف) -->
+    <!-- واجهة الخادم -->
     <section id="teacherScreen" class="hidden">
       <div class="card hero">
         <h2>لوحة الخدام</h2>
@@ -364,7 +364,7 @@
       themeBtn.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     });
 
-    // دخول الشباب
+    // دخول الشباب بجوجل (استخدام Popup بدل Redirect لحل مشكلة الموبايل)
     $("googleLoginBtn").addEventListener("click", () => {
       const nameInput = $("studentNameInput").value.trim();
       if (nameInput.length < 3) {
@@ -375,8 +375,9 @@
       }
       $("loginMessage").classList.add("hidden");
       sessionStorage.setItem("tempStudentName", nameInput);
-      loginMode = "student";
-      auth.signInWithRedirect(provider).catch((error) => {
+      loginMode = "student"; // تحديد إنه داخل كشاب
+      
+      auth.signInWithPopup(provider).catch((error) => {
         $("loginMessage").className = "notice error-notice";
         $("loginMessage").textContent = "خطأ في الدخول: " + error.message;
         $("loginMessage").classList.remove("hidden");
@@ -390,7 +391,7 @@
         wrongTeacherAttempts = 0;
         $("teacherLoginMessage").classList.add("hidden");
         $("teacherPassword").value = "";
-        loginMode = "teacher"; // تمييز إنه داخل كخادم عشان ميروحش لصفحة الطلاب
+        loginMode = "teacher"; // تمييز إنه داخل كخادم
         showScreen("teacher"); // الدخول ناجح فوراً
         $("teacherAttendanceDate").valueAsDate = new Date();
       } else {
@@ -408,18 +409,18 @@
       }
     });
 
-    auth.getRedirectResult().catch((error) => console.error(error));
-
+    // مراقبة حالة تسجيل الدخول (تحديد هل هو شاب، خادم، أم مطور)
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
-        // الأولوية القصوى: لو كان داخل من زرار الخدام، نخليه خادم مهما كان إيميله
+        
+        // لو داخل من زرار الخدام، يفضل خادم
         if (loginMode === "teacher") {
            userRole = "teacher";
            showScreen("teacher");
            $("teacherAttendanceDate").valueAsDate = new Date();
         } 
-        // لو إيميله إيميل المطور، يدخل صفحة المطور
+        // لو إيميله هو إيميلك، يدخل صفحة المطور
         else if (user.email === ADMIN_EMAIL) {
           userRole = "admin";
           showScreen("admin");
@@ -452,10 +453,9 @@
     $("teacherLogout").addEventListener("click", () => { loginMode = "student"; userRole = "student"; auth.signOut(); showScreen("login"); });
     $("devExitBtn").addEventListener("click", () => { auth.signOut(); localStorage.clear(); });
 
-    // دوال الحفظ
     async function saveAttendance(name, type, date, msgEl) {
       if (!currentUser) {
-         msgEl.className = "notice error-notice"; msgEl.textContent = "يجب تسجيل الدخول بجوجل أولاً لتتمكن من الحفظ."; msgEl.classList.remove("hidden"); return;
+         msgEl.className = "notice error-notice"; msgEl.textContent = "يجب تسجيل الدخول أولاً."; msgEl.classList.remove("hidden"); return;
       }
       if (!name || !date) { msgEl.className = "notice error-notice"; msgEl.textContent = "لازم تكتب الاسم والتاريخ"; msgEl.classList.remove("hidden"); return; }
       
@@ -468,7 +468,7 @@
         msgEl.className = "notice success-notice"; msgEl.textContent = `✅ تم تسجيل حضور "${name}" — ${POINTS[type]} نقطة`;
         msgEl.classList.remove("hidden"); setTimeout(() => msgEl.classList.add("hidden"), 4000); return true;
       } catch (err) {
-        msgEl.className = "notice error-notice"; msgEl.textContent = "خطأ في الحفظ (تأكد من قواعد فايربيس): " + err.message; msgEl.classList.remove("hidden"); return false;
+        msgEl.className = "notice error-notice"; msgEl.textContent = "خطأ في الحفظ: " + err.message; msgEl.classList.remove("hidden"); return false;
       }
     }
 
@@ -484,7 +484,6 @@
       if (success) $("teacherAttendeeName").value = "";
     });
 
-    // إعدادات المسح والتصدير
     $("wipeAll").addEventListener("click", async () => {
       if (userRole !== "admin") return;
       if (!confirm("متأكد؟ هيتم مسح كل السجلات نهائياً.")) return;
@@ -500,7 +499,6 @@
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `attendance-${Date.now()}.csv`; a.click();
     });
 
-    // المزامنة
     db.ref(".info/connected").on("value", (snap) => {
       const dot = $("connectionDot"); const text = $("connectionText");
       if (dot) { dot.classList.toggle("offline", !snap.val()); text.textContent = snap.val() ? "متصل" : "غير متصل"; }
@@ -517,7 +515,6 @@
       if (userRole === "student") renderStudentView();
     });
 
-    // واجهة المطور
     function updateAdminView() {
       const board = buildLeaderboard();
       $("adminPeopleCount").textContent = board.length;
@@ -525,25 +522,18 @@
       $("adminPointsCount").textContent = allRecords.reduce((s, r) => s + (r.points || 0), 0);
       renderRecordsList($("adminRecordsList"), $("adminSearch").value, true);
     }
-
     $("adminSearch").addEventListener("input", updateAdminView);
 
-    // واجهة الخادم
     function updateTeacherView() {
       renderRecordsList($("teacherRecordsList"), $("teacherSearch").value, false);
       renderLeaderboardTo($("teacherLeaderboardList"), buildLeaderboard());
     }
-
-    function renderTeacherRecords() {
-        updateTeacherView();
-    }
+    function renderTeacherRecords() { updateTeacherView(); }
 
     function renderRecordsList(container, searchQuery, allowBulkDelete) {
       const q = normalizeName(searchQuery);
       const filtered = allRecords.filter(r => !q || (r.nameKey || normalizeName(r.name)).includes(q));
-
       if (!filtered.length) { container.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i>لا توجد سجلات</div>`; return; }
-
       const grouped = {};
       filtered.forEach(r => {
         const key = r.nameKey || normalizeName(r.name);
@@ -551,19 +541,14 @@
         grouped[key].points += r.points || 0;
         grouped[key].records.push(r);
       });
-
       container.innerHTML = Object.values(grouped).map(g => {
         const details = g.records.map(r => `<small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>`).join('');
         const recordIds = g.records.map(r => r.id).join(',');
-        
-        // المطور بيشوف زرار "حذف كل السجلات"، الخادم بيشوف زرار "حذف السجلات"
-        const delBtn = `<button class="btn danger small" data-del="${recordIds}"><i class="fa-solid fa-trash"></i> حذف السجلات</button>`;
-
         return `
           <div class="admin-record">
             <strong>${escapeHtml(g.name)} <span style="color:var(--secondary);font-size:12px">(${g.points} نقطة)</span></strong>
             <div class="admin-record-details">${details}</div>
-            ${delBtn}
+            <button class="btn danger small" data-del="${recordIds}"><i class="fa-solid fa-trash"></i> حذف السجلات</button>
           </div>`;
       }).join("");
 
