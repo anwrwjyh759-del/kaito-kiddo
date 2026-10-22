@@ -142,12 +142,13 @@
     .connection-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
     .connection-dot.offline { background: #ffb84d; }
     .admin-record {
-      padding: 13px; border: 1px solid var(--border); background: var(--card2);
-      border-radius: 14px; margin-bottom: 9px;
+      padding: 15px; border: 1px solid var(--border); background: var(--card2);
+      border-radius: 14px; margin-bottom: 12px;
     }
-    .admin-record strong { display: block; overflow-wrap: anywhere; margin-bottom: 5px; }
-    .admin-record small { color: var(--muted); font-size: 11px; }
-    .admin-record .btn { margin-top: 10px; }
+    .admin-record strong { display: block; overflow-wrap: anywhere; margin-bottom: 8px; font-size: 15px; }
+    .admin-record-details { background: rgba(0,0,0,0.15); padding: 10px; border-radius: 10px; margin-bottom: 10px; }
+    .admin-record-details small { display: block; color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+    .admin-record-details small:last-child { margin-bottom: 0; }
     .divider { height: 1px; background: var(--border); margin: 17px 0; }
     @media (max-width: 380px) {
       .card { padding: 15px; }
@@ -190,7 +191,7 @@
 
         <div class="field">
           <label for="studentNameInput">اكتب اسمك الثلاثي (هيتقفل ومش هيتغير)</label>
-          <input id="studentNameInput" type="text" placeholder="مثال: أنور وجيه فهمي">
+          <input id="studentNameInput" type="text" placeholder="">
         </div>
 
         <button class="btn" id="googleLoginBtn" style="background: linear-gradient(135deg, #4285f4, #357ae8);">
@@ -287,14 +288,18 @@
       </div>
     </section>
 
-    <!-- واجهة الطالب (بدون زرار خروج) -->
+    <!-- واجهة الطالب -->
     <section id="studentScreen" class="hidden">
       <div class="card">
-        <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
           <span class="badge">
             <span class="connection-dot" id="connectionDot"></span>
             <span id="connectionText">جاري الاتصال</span>
           </span>
+          <!-- زرار الخروج للمطور (مخفي افتراضياً) -->
+          <button class="btn danger small hidden" id="devExitBtn" style="width:auto; padding: 5px 10px; font-size: 11px;">
+            <i class="fa-solid fa-door-open"></i> خروج المطور
+          </button>
         </div>
 
         <div style="margin-top:20px">
@@ -401,9 +406,10 @@
     const recordsRef = db.ref("attendance/records");
 
     // ==========================================
-    // إيميل المسؤول (أنت)
+    // إيميلات المسؤول/المطور
     // ==========================================
     const ADMIN_EMAIL = "anwrwjyh759@gmail.com"; 
+    const DEV_EMAILS = ["anwrwjyh759@gmail.com", "anwarwagih815@gmail.com"];
 
     // ==========================================
     // ثوابت
@@ -497,7 +503,6 @@
       }
 
       msg.classList.add("hidden");
-      // بنحفظ الاسم اللي كتبه عشان نستخدمه بعد ما جوجل تفتح
       sessionStorage.setItem("tempStudentName", nameInput);
 
       auth.signInWithPopup(provider)
@@ -521,13 +526,18 @@
         } else {
           showScreen("student");
           
-          // لو أول مرة يدخل، بنحفظ الاسم اللي كتبه قبل ما يدوس جوجل
+          // كود إظهار زرار الخروج للمطورين فقط
+          if (DEV_EMAILS.includes(user.email)) {
+            $("devExitBtn").classList.remove("hidden");
+          } else {
+            $("devExitBtn").classList.add("hidden");
+          }
+
           const tempName = sessionStorage.getItem("tempStudentName");
           if (!localStorage.getItem("name_" + user.uid)) {
              localStorage.setItem("name_" + user.uid, tempName || user.displayName || user.email.split("@")[0]);
           }
 
-          // عرض الإيميل والاسم في صفحة الطالب
           $("profileEmail").textContent = user.email;
           renderStudentView();
         }
@@ -539,9 +549,17 @@
     });
 
     // ==========================================
-    // خروج المسؤول فقط
+    // خروج المسؤول
     // ==========================================
     $("adminLogout").addEventListener("click", () => auth.signOut());
+
+    // ==========================================
+    // خروج المطور (للطلاب المطورين فقط)
+    // ==========================================
+    $("devExitBtn").addEventListener("click", () => {
+      auth.signOut();
+      localStorage.clear(); // بيمسح الاسم عشان تقدر تدخل بحساب تاني
+    });
 
     // ==========================================
     // تسجيل حضور (للمسؤول فقط)
@@ -714,21 +732,47 @@
         return;
       }
 
-      list.innerHTML = filtered.slice(0, 100).map(r => `
-        <div class="admin-record">
-          <strong>${escapeHtml(r.name)}</strong>
-          <small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>
-          <button class="btn danger small" data-del="${r.id}">
-            <i class="fa-solid fa-trash"></i> حذف
-          </button>
-        </div>
-      `).join("");
+      // تجميع السجلات حسب الاسم عشان تظهر في كارت واحد
+      const grouped = {};
+      filtered.forEach(r => {
+        const key = r.nameKey || normalizeName(r.name);
+        if (!grouped[key]) {
+          grouped[key] = { name: r.name, points: 0, records: [] };
+        }
+        grouped[key].points += r.points || 0;
+        grouped[key].records.push(r);
+      });
+
+      list.innerHTML = Object.values(grouped).map(g => {
+        const details = g.records.map(r => 
+          `<small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>`
+        ).join('');
+        
+        // بناخد أول ID في السجلات عشان لما ندوس حذف، نمسحهم كلهم
+        const recordIds = g.records.map(r => r.id).join(',');
+
+        return `
+          <div class="admin-record">
+            <strong>${escapeHtml(g.name)} <span style="color:var(--secondary);font-size:12px">(${g.points} نقطة)</span></strong>
+            <div class="admin-record-details">
+              ${details}
+            </div>
+            <button class="btn danger small" data-del="${recordIds}">
+              <i class="fa-solid fa-trash"></i> حذف كل السجلات
+            </button>
+          </div>
+        `;
+      }).join("");
 
       list.querySelectorAll("[data-del]").forEach(btn => {
         btn.addEventListener("click", async () => {
-          if (!confirm("حذف السجل؟")) return;
+          if (!confirm("حذف كل السجلات لهذا الشخص؟")) return;
           if (!isAdmin) return;
-          await recordsRef.child(btn.dataset.del).remove();
+          const ids = btn.dataset.del.split(',');
+          // بيمسح كل السجلات اللي تخص الشخص ده
+          for (const id of ids) {
+            await recordsRef.child(id).remove();
+          }
         });
       });
     }
@@ -740,7 +784,6 @@
       if (!currentUser) return;
       const board = buildLeaderboard();
       
-      // بنجيب الاسم اللي الطالب كتبه أول مرة
       const myName = localStorage.getItem("name_" + currentUser.uid) || "طالب";
       const myKey = normalizeName(myName);
       const me = board.find(p => normalizeName(p.name) === myKey);
