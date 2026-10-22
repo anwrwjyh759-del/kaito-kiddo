@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سجل الحضور — Leaderboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --bg: #0b1020; --card: #141c31; --card2: #1b2540;
+      --text: #f5f7ff; --muted: #a4afca;
+      --primary: #7c5cff; --secondary: #16c7e8;
+      --green: #29d391; --red: #ff5f7a;
+      --border: rgba(255,255,255,.09);
+      --shadow: 0 15px 45px rgba(0,0,0,.22);
+    }
+    body.light {
+      --bg: #f1f4fb; --card: #ffffff; --card2: #edf0fa;
+      --text: #17213b; --muted: #69738c;
+      --border: rgba(30,45,80,.12);
+      --shadow: 0 15px 40px rgba(30,45,80,.09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Cairo", sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(124,92,255,.15), transparent 30%),
+        radial-gradient(circle at 100% 20%, rgba(22,199,232,.10), transparent 28%),
+        var(--bg);
+      color: var(--text); min-height: 100vh; transition: .25s;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .container { width: min(100% - 24px, 560px); margin: auto; padding: 22px 0 35px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 49px; height: 49px; border-radius: 16px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; font-size: 22px; box-shadow: 0 8px 25px #7c5cff35;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    .brand h1 { font-size: 18px; margin: 0; font-weight: 900; }
+    .brand p { font-size: 11px; color: var(--muted); margin: 2px 0 0; direction: ltr; text-align: right; }
+    .icon-btn { width: 43px; height: 43px; border: 1px solid var(--border); border-radius: 14px; color: var(--text); background: var(--card); }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+      padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+    }
+    .hero {
+      background: linear-gradient(135deg, #6e50f5, #4833a8 65%, #147fa8);
+      border: 0; color: white; overflow: hidden; position: relative;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 170px; height: 170px; border-radius: 50%;
+      background: #ffffff12; left: -55px; top: -75px;
+    }
+    .hero h2 { font-size: 22px; margin-bottom: 7px; font-weight: 900; }
+    .hero p { color: #e5e5ff; font-size: 13px; margin-bottom: 0; }
+    .section-title { font-size: 16px; font-weight: 900; margin-bottom: 16px; display: flex; align-items: center; gap: 9px; }
+    .section-title i { color: var(--secondary); }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 7px; font-weight: 700; }
+    input, select {
+      width: 100%; min-width: 0; background: var(--card2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 13px; padding: 12px 13px; outline: none;
+    }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px #7c5cff20; }
+    select option { background: var(--card); color: var(--text); }
+    .btn {
+      width: 100%; border: 0; border-radius: 13px; padding: 13px 16px; color: white;
+      font-weight: 900; background: linear-gradient(135deg, var(--primary), #5c45d8);
+      transition: transform .15s, opacity .15s;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn.secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
+    .btn.danger { background: linear-gradient(135deg, #ff526f, #d92c55); }
+    .btn.success { background: linear-gradient(135deg, #19bc83, #0d946a); }
+    .btn.small { width: auto; padding: 8px 12px; font-size: 12px; }
+    .btn-row { display: flex; gap: 9px; flex-wrap: wrap; }
+    .btn-row .btn { flex: 1; }
+    .link-btn { display: block; text-align: center; width: 100%; background: none; border: 0; color: var(--secondary); padding: 13px 5px 0; font-weight: 800; }
+    .muted { color: var(--muted); }
+    .small-text { font-size: 12px; line-height: 1.8; }
+    .notice {
+      padding: 12px; border-radius: 13px; background: var(--card2); color: var(--muted);
+      font-size: 12px; line-height: 1.8; margin-bottom: 14px; overflow-wrap: anywhere;
+    }
+    .notice.success-notice { color: var(--green); }
+    .notice.error-notice { color: var(--red); }
+    .hidden { display: none !important; }
+    .points-circle {
+      width: 185px; height: 185px; margin: 8px auto 22px; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background:
+        radial-gradient(circle at center, var(--card) 57%, transparent 59%),
+        conic-gradient(var(--secondary) 0deg, var(--primary) 270deg, var(--card2) 270deg);
+      box-shadow: 0 0 35px #7c5cff20; text-align: center;
+    }
+    .points-number { font-size: 42px; font-weight: 900; line-height: 1.2; direction: ltr; }
+    .points-label { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .profile-name { text-align: center; font-size: 19px; font-weight: 900; overflow-wrap: anywhere; margin-bottom: 5px; }
+    .profile-subtitle { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stat { background: var(--card2); border: 1px solid var(--border); padding: 14px 5px; border-radius: 15px; text-align: center; }
+    .stat strong { display: block; font-size: 22px; font-weight: 900; direction: ltr; }
+    .stat span { font-size: 11px; color: var(--muted); }
+    .tabs { display: flex; gap: 8px; margin-bottom: 15px; }
+    .tab {
+      flex: 1; padding: 11px 6px; border-radius: 12px; border: 1px solid var(--border);
+      color: var(--muted); background: var(--card); font-size: 12px; font-weight: 800;
+    }
+    .tab.active { color: white; background: var(--primary); border-color: var(--primary); }
+    .table-tools { display: flex; gap: 9px; margin-bottom: 12px; }
+    .table-tools input { flex: 1; }
+    .table-tools select { width: 135px; }
+    .leader-row { display: flex; align-items: center; gap: 11px; padding: 12px 10px; border-bottom: 1px solid var(--border); }
+    .leader-row:last-child { border-bottom: 0; }
+    .rank {
+      width: 36px; height: 36px; flex-shrink: 0; display: grid; place-items: center;
+      border-radius: 12px; background: var(--card2); font-weight: 900; direction: ltr;
+    }
+    .rank.gold { background: #ffc94325; color: #ffc943; }
+    .rank.silver { background: #aab7ce25; color: #aab7ce; }
+    .rank.bronze { background: #d98c5925; color: #e6a171; }
+    .leader-info { flex: 1; min-width: 0; }
+    .leader-name { font-size: 13px; font-weight: 800; overflow-wrap: anywhere; }
+    .leader-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .leader-points { font-weight: 900; color: var(--secondary); white-space: nowrap; direction: ltr; }
+    .empty { text-align: center; color: var(--muted); padding: 24px 8px; font-size: 13px; }
+    .empty i { display: block; font-size: 28px; margin-bottom: 12px; opacity: .6; }
+    .footer { text-align: center; color: var(--muted); font-size: 11px; padding: 12px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; border-radius: 30px;
+      background: #29d39118; color: var(--green); padding: 6px 10px; font-size: 11px; font-weight: 800;
+    }
+    .connection-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .connection-dot.offline { background: #ffb84d; }
+    .admin-record {
+      padding: 13px; border: 1px solid var(--border); background: var(--card2);
+      border-radius: 14px; margin-bottom: 9px;
+    }
+    .admin-record strong { display: block; overflow-wrap: anywhere; margin-bottom: 5px; }
+    .admin-record small { color: var(--muted); font-size: 11px; }
+    .admin-record .btn { margin-top: 10px; }
+    .divider { height: 1px; background: var(--border); margin: 17px 0; }
+    @media (max-width: 380px) {
+      .card { padding: 15px; }
+      .stats-grid { gap: 6px; }
+      .stat strong { font-size: 19px; }
+      .table-tools { flex-direction: column; }
+      .table-tools select { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-church"></i></div>
+        <div>
+          <h1>سجل الحضور</h1>
+          <p>LEADERBOARD</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="themeBtn" title="تغيير المظهر">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </header>
+
+    <!-- شاشة الدخول للطلاب -->
+    <section id="loginScreen">
+      <div class="card hero">
+        <h2>أهلاً بيك 👋</h2>
+        <p>سجّل اسمك، وتابع نقاطك وترتيبك.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-user"></i>
+          الدخول
+        </h3>
+
+        <div class="field">
+          <label for="studentNameInput">اكتب اسمك الثلاثي (هيتقفل ومش هيتغير)</label>
+          <input id="studentNameInput" type="text" placeholder="مثال: أنور وجيه فهمي">
+        </div>
+
+        <button class="btn" id="googleLoginBtn" style="background: linear-gradient(135deg, #4285f4, #357ae8);">
+          <i class="fa-brands fa-google"></i>
+          تابع باستخدام جوجل
+        </button>
+
+        <div id="loginMessage" class="notice hidden" style="margin-top:13px"></div>
+      </div>
+
+      <div class="footer">سجل الحضور • نظام النقاط والترتيب</div>
+    </section>
+
+    <!-- واجهة الإدارة -->
+    <section id="adminScreen" class="hidden">
+      <div class="card hero">
+        <h2>لوحة الإدارة</h2>
+        <p>سجّل الحضور والخدمة والأنشطة، والنقاط هتتجمع تلقائيًا.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-circle-plus"></i>
+          تسجيل حضور جديد
+        </h3>
+
+        <form id="attendanceForm">
+          <div class="field">
+            <label for="attendeeName">الاسم الثلاثي</label>
+            <input id="attendeeName" type="text" placeholder="اكتب الاسم الثلاثي" required>
+          </div>
+
+          <div class="field">
+            <label for="attendanceType">نوع الحضور</label>
+            <select id="attendanceType">
+              <option value="mass">القداس — 50 نقطة</option>
+              <option value="service">الخدمة — 30 نقطة</option>
+              <option value="activity">النشاط — 30 نقطة</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="attendanceDate">تاريخ الحضور</label>
+            <input id="attendanceDate" type="date" required>
+          </div>
+
+          <button class="btn success" type="submit">
+            <i class="fa-solid fa-check"></i>
+            تسجيل وإضافة النقاط
+          </button>
+        </form>
+
+        <div id="adminMessage" class="notice hidden" style="margin-top:13px"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-chart-column"></i>
+          ملخص السجل
+        </h3>
+
+        <div class="stats-grid">
+          <div class="stat"><strong id="adminPeopleCount">0</strong><span>الأعضاء</span></div>
+          <div class="stat"><strong id="adminEventsCount">0</strong><span>السجلات</span></div>
+          <div class="stat"><strong id="adminPointsCount">0</strong><span>النقاط</span></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field">
+          <label for="adminSearch">البحث في السجلات</label>
+          <input id="adminSearch" type="search" placeholder="ابحث بالاسم...">
+        </div>
+
+        <div id="adminRecordsList"></div>
+
+        <div class="divider"></div>
+
+        <div class="btn-row">
+          <button class="btn secondary" id="exportCsv">
+            <i class="fa-solid fa-file-csv"></i>
+            تصدير CSV
+          </button>
+          <button class="btn secondary" id="adminLogout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            خروج
+          </button>
+        </div>
+
+        <button class="btn danger" id="wipeAll" style="margin-top:12px">
+          <i class="fa-solid fa-trash"></i>
+          مسح جميع السجلات
+        </button>
+      </div>
+    </section>
+
+    <!-- واجهة الطالب (بدون زرار خروج) -->
+    <section id="studentScreen" class="hidden">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="badge">
+            <span class="connection-dot" id="connectionDot"></span>
+            <span id="connectionText">جاري الاتصال</span>
+          </span>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="profile-name" id="profileName">اسم الطالب</div>
+          <div class="profile-subtitle" id="profileEmail">البريد الإلكتروني</div>
+
+          <div class="points-circle">
+            <div class="points-number" id="studentPoints">0</div>
+            <div class="points-label">إجمالي النقاط</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat"><strong id="studentRank">—</strong><span>ترتيبك</span></div>
+            <div class="stat"><strong id="studentEvents">0</strong><span>مرات الحضور</span></div>
+            <div class="stat"><strong id="studentDays">0</strong><span>أيام الحضور</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="leaderboard">
+          <i class="fa-solid fa-trophy"></i> لوحة الترتيب
+        </button>
+        <button class="tab" data-tab="profile">
+          <i class="fa-solid fa-user"></i> ملفي الشخصي
+        </button>
+      </div>
+
+      <div id="leaderboardTab" class="card">
+        <h3 class="section-title">
+          <i class="fa-solid fa-ranking-star"></i>
+          ترتيب الأعضاء
+        </h3>
+
+        <div class="table-tools">
+          <input id="leaderSearch" type="search" placeholder="ابحث عن اسم...">
+          <select id="leaderSort">
+            <option value="points">الأعلى نقاطًا</option>
+            <option value="name">الاسم أبجديًا</option>
+          </select>
+        </div>
+
+        <div id="leaderboardList"></div>
+      </div>
+
+      <div id="profileTab" class="card hidden">
+        <h3 class="section-title">
+          <i class="fa-solid fa-address-card"></i>
+          بيانات ملفي
+        </h3>
+
+        <div class="notice">
+          النقاط المعروضة هنا محسوبة من سجلات الحضور التي سجلها المسؤول.
+        </div>
+
+        <div class="field">
+          <label>الاسم المسجل</label>
+          <input id="profileNameReadOnly" type="text" readonly>
+        </div>
+
+        <div class="field">
+          <label>إجمالي النقاط</label>
+          <input id="profilePointsReadOnly" type="text" readonly>
+        </div>
+
+        <div class="field">
+          <label>ترتيبك بين الأعضاء</label>
+          <input id="profileRankReadOnly" type="text" readonly>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      سجل الحضور — Leaderboard
+      <br>
+      <span id="storageStatus">تهيئة قاعدة البيانات...</span>
+    </footer>
+
+  </main>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <script>
+    // ==========================================
+    // Firebase Config
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDUDqIZErJC6EXjvoPT06mAwmZyhM59hkY",
+      authDomain: "kaito-kiddo.firebaseapp.com",
+      databaseURL: "https://kaito-kiddo-default-rtdb.firebaseio.com/",
+      projectId: "kaito-kiddo",
+      storageBucket: "kaito-kiddo.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:0000000000000000000000"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const recordsRef = db.ref("attendance/records");
+
+    // ==========================================
+    // إيميل المسؤول (أنت)
+    // ==========================================
+    const ADMIN_EMAIL = "anwrwjyh759@gmail.com"; 
+
+    // ==========================================
+    // ثوابت
+    // ==========================================
+    const POINTS = { mass: 50, service: 30, activity: 30 };
+    const TYPE_LABELS = { mass: "القداس", service: "الخدمة", activity: "النشاط" };
+
+    // ==========================================
+    // تطبيع الأسماء
+    // ==========================================
+    const ARABIC_SOUND_MAP = {
+      "th":"ث","sh":"ش","ch":"ش","kh":"خ","gh":"غ","ph":"ف","aa":"ا","ee":"ي","oo":"و","ou":"و",
+      "ai":"ي","ay":"ي","ey":"ي","ei":"ي","ie":"ي","a":"ا","b":"ب","c":"ك","d":"د","e":"ي","f":"ف",
+      "g":"ج","h":"ه","i":"ي","j":"ج","k":"ك","l":"ل","m":"م","n":"ن","o":"و","p":"ب","q":"ق","r":"ر",
+      "s":"س","t":"ت","u":"و","v":"ف","w":"و","x":"كس","y":"ي","z":"ز"
+    };
+
+    function normalizeName(raw) {
+      if (!raw) return "";
+      let s = String(raw).trim();
+      s = s.replace(/[\u064B-\u065F\u0670\u0640]/g, "");
+      s = s.replace(/[أإآٱ]/g, "ا");
+      s = s.replace(/ى/g, "ي");
+      s = s.replace(/ة/g, "ه");
+      s = s.replace(/ؤ/g, "و").replace(/ئ/g, "ي");
+      s = s.replace(/[^\p{L}\p{N}]/gu, "");
+      s = s.toLowerCase();
+      s = s.replace(/(.)\1+/g, "$1");
+      const hasArabic = /[\u0600-\u06FF]/.test(s);
+      if (!hasArabic && /^[a-z0-9]+$/.test(s)) {
+        let out = "", i = 0;
+        while (i < s.length) {
+          const two = s.substr(i, 2);
+          if (ARABIC_SOUND_MAP[two]) { out += ARABIC_SOUND_MAP[two]; i += 2; continue; }
+          out += ARABIC_SOUND_MAP[s[i]] || s[i]; i += 1;
+        }
+        s = out;
+      }
+      return s;
+    }
+
+    // ==========================================
+    // State
+    // ==========================================
+    let allRecords = [];
+    let currentUser = null;
+    let isAdmin = false;
+
+    const $ = (id) => document.getElementById(id);
+
+    const screens = {
+      login: $("loginScreen"),
+      admin: $("adminScreen"),
+      student: $("studentScreen")
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(s => s.classList.add("hidden"));
+      screens[name].classList.remove("hidden");
+    }
+
+    // ==========================================
+    // الوضع الليلي
+    // ==========================================
+    const themeBtn = $("themeBtn");
+    if (localStorage.getItem("theme") === "light") {
+      document.body.classList.add("light");
+      themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+    }
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("light");
+      const isLight = document.body.classList.contains("light");
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+      themeBtn.innerHTML = isLight
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+    });
+
+    // ==========================================
+    // تسجيل الدخول بجوجل (للطلاب)
+    // ==========================================
+    $("googleLoginBtn").addEventListener("click", () => {
+      const msg = $("loginMessage");
+      const nameInput = $("studentNameInput").value.trim();
+      
+      if (nameInput.length < 3) {
+        msg.className = "notice error-notice";
+        msg.textContent = "لازم تكتب اسمك الثلاثي الأول عشان تقدر تكمل.";
+        msg.classList.remove("hidden");
+        return;
+      }
+
+      msg.classList.add("hidden");
+      // بنحفظ الاسم اللي كتبه عشان نستخدمه بعد ما جوجل تفتح
+      sessionStorage.setItem("tempStudentName", nameInput);
+
+      auth.signInWithPopup(provider)
+        .catch((error) => {
+          msg.className = "notice error-notice";
+          msg.textContent = "خطأ في الدخول: " + error.message;
+          msg.classList.remove("hidden");
+        });
+    });
+
+    // ==========================================
+    // مراقبة حالة تسجيل الدخول
+    // ==========================================
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        isAdmin = (user.email === ADMIN_EMAIL);
+
+        if (isAdmin) {
+          showScreen("admin");
+        } else {
+          showScreen("student");
+          
+          // لو أول مرة يدخل، بنحفظ الاسم اللي كتبه قبل ما يدوس جوجل
+          const tempName = sessionStorage.getItem("tempStudentName");
+          if (!localStorage.getItem("name_" + user.uid)) {
+             localStorage.setItem("name_" + user.uid, tempName || user.displayName || user.email.split("@")[0]);
+          }
+
+          // عرض الإيميل والاسم في صفحة الطالب
+          $("profileEmail").textContent = user.email;
+          renderStudentView();
+        }
+      } else {
+        currentUser = null;
+        isAdmin = false;
+        showScreen("login");
+      }
+    });
+
+    // ==========================================
+    // خروج المسؤول فقط
+    // ==========================================
+    $("adminLogout").addEventListener("click", () => auth.signOut());
+
+    // ==========================================
+    // تسجيل حضور (للمسؤول فقط)
+    // ==========================================
+    $("attendanceDate").valueAsDate = new Date();
+
+    $("attendanceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!isAdmin) { alert("لازم تكون مسؤول"); return; }
+
+      const name = $("attendeeName").value.trim();
+      const type = $("attendanceType").value;
+      const date = $("attendanceDate").value;
+      const msg = $("adminMessage");
+
+      if (!name || !date) {
+        msg.className = "notice error-notice";
+        msg.textContent = "لازم تكتب الاسم والتاريخ";
+        msg.classList.remove("hidden");
+        return;
+      }
+
+      const normalizedKey = normalizeName(name);
+      const existing = allRecords.find(r => (r.nameKey || normalizeName(r.name)) === normalizedKey);
+      if (existing && existing.name.trim() !== name) {
+        if (!confirm(`فيه اسم مسجل قبل كده بنفس التطبيع: "${existing.name}"\nهيتم إضافتها لنفس الشخص. تمام؟`)) return;
+      }
+
+      try {
+        await recordsRef.push({
+          name,
+          nameKey: normalizedKey,
+          type,
+          points: POINTS[type],
+          date,
+          timestamp: Date.now()
+        });
+
+        msg.className = "notice success-notice";
+        msg.textContent = `✅ تم تسجيل حضور "${name}" — ${POINTS[type]} نقطة`;
+        msg.classList.remove("hidden");
+        $("attendeeName").value = "";
+        setTimeout(() => msg.classList.add("hidden"), 4000);
+      } catch (err) {
+        msg.className = "notice error-notice";
+        msg.textContent = "خطأ في الحفظ: " + err.message;
+        msg.classList.remove("hidden");
+      }
+    });
+
+    // ==========================================
+    // مسح السجلات
+    // ==========================================
+    $("wipeAll").addEventListener("click", async () => {
+      if (!isAdmin) { alert("لازم تكون مسؤول"); return; }
+      if (!confirm("متأكد؟ هيتم مسح كل السجلات ولا يمكن التراجع.")) return;
+      if (!confirm("تأكيد نهائي: امسح الكل؟")) return;
+      try {
+        await recordsRef.remove();
+        alert("تم المسح");
+      } catch (err) {
+        alert("خطأ: " + err.message);
+      }
+    });
+
+    // ==========================================
+    // تصدير CSV
+    // ==========================================
+    $("exportCsv").addEventListener("click", () => {
+      if (!allRecords.length) { alert("مفيش سجلات"); return; }
+      const rows = [["الاسم", "النوع", "النقاط", "التاريخ"]];
+      allRecords.forEach(r => rows.push([r.name, TYPE_LABELS[r.type] || r.type, r.points, r.date]));
+      const csv = "\uFEFF" + rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `attendance-${Date.now()}.csv`;
+      a.click();
+    });
+
+    // ==========================================
+    // الاتصال والاستماع للسجلات
+    // ==========================================
+    function setConnection(online) {
+      const dot = $("connectionDot");
+      const text = $("connectionText");
+      if (!dot) return;
+      dot.classList.toggle("offline", !online);
+      text.textContent = online ? "متصل" : "غير متصل";
+    }
+
+    db.ref(".info/connected").on("value", (snap) => {
+      setConnection(!!snap.val());
+      $("storageStatus").textContent = snap.val()
+        ? "✅ متصل بقاعدة البيانات"
+        : "⚠️ غير متصل";
+    });
+
+    recordsRef.on("value", (snapshot) => {
+      const val = snapshot.val() || {};
+      allRecords = Object.entries(val).map(([id, r]) => ({ id, ...r }));
+      allRecords.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      if (isAdmin) updateAdminView();
+      if (currentUser && !isAdmin) renderStudentView();
+    }, (err) => {
+      console.error("Firebase error:", err);
+      $("storageStatus").textContent = "❌ خطأ: " + err.message;
+    });
+
+    // ==========================================
+    // بناء الليدر بورد
+    // ==========================================
+    function buildLeaderboard() {
+      const map = new Map();
+      allRecords.forEach(r => {
+        const key = r.nameKey || normalizeName(r.name);
+        if (!key) return;
+        if (!map.has(key)) {
+          map.set(key, {
+            name: r.name,
+            points: 0,
+            events: 0,
+            days: new Set(),
+            firstTimestamp: r.timestamp || 0
+          });
+        }
+        const entry = map.get(key);
+        entry.points += r.points || 0;
+        entry.events += 1;
+        entry.days.add(r.date);
+        if ((r.timestamp || 0) < entry.firstTimestamp) {
+          entry.name = r.name;
+          entry.firstTimestamp = r.timestamp || 0;
+        }
+      });
+      const arr = [...map.values()].map(e => ({
+        name: e.name,
+        points: e.points,
+        events: e.events,
+        days: e.days.size
+      }));
+      arr.sort((a, b) => b.points - a.points || a.name.localeCompare(b.name, "ar"));
+      arr.forEach((e, i) => e.rank = i + 1);
+      return arr;
+    }
+
+    // ==========================================
+    // واجهة الإدارة
+    // ==========================================
+    function updateAdminView() {
+      const board = buildLeaderboard();
+      $("adminPeopleCount").textContent = board.length;
+      $("adminEventsCount").textContent = allRecords.length;
+      $("adminPointsCount").textContent = allRecords.reduce((s, r) => s + (r.points || 0), 0);
+      renderAdminRecords();
+    }
+
+    $("adminSearch").addEventListener("input", renderAdminRecords);
+
+    function renderAdminRecords() {
+      const q = normalizeName($("adminSearch").value);
+      const list = $("adminRecordsList");
+      const filtered = allRecords.filter(r => {
+        if (!q) return true;
+        return (r.nameKey || normalizeName(r.name)).includes(q);
+      });
+
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i>لا توجد سجلات</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.slice(0, 100).map(r => `
+        <div class="admin-record">
+          <strong>${escapeHtml(r.name)}</strong>
+          <small>${TYPE_LABELS[r.type] || r.type} • ${r.points} نقطة • ${r.date}</small>
+          <button class="btn danger small" data-del="${r.id}">
+            <i class="fa-solid fa-trash"></i> حذف
+          </button>
+        </div>
+      `).join("");
+
+      list.querySelectorAll("[data-del]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          if (!confirm("حذف السجل؟")) return;
+          if (!isAdmin) return;
+          await recordsRef.child(btn.dataset.del).remove();
+        });
+      });
+    }
+
+    // ==========================================
+    // واجهة الطالب
+    // ==========================================
+    function renderStudentView() {
+      if (!currentUser) return;
+      const board = buildLeaderboard();
+      
+      // بنجيب الاسم اللي الطالب كتبه أول مرة
+      const myName = localStorage.getItem("name_" + currentUser.uid) || "طالب";
+      const myKey = normalizeName(myName);
+      const me = board.find(p => normalizeName(p.name) === myKey);
+
+      $("profileName").textContent = myName;
+      $("profileNameReadOnly").value = myName;
+
+      if (me) {
+        $("studentPoints").textContent = me.points;
+        $("studentRank").textContent = me.rank;
+        $("studentEvents").textContent = me.events;
+        $("studentDays").textContent = me.days;
+        $("profilePointsReadOnly").value = me.points + " نقطة";
+        $("profileRankReadOnly").value = `#${me.rank} من ${board.length}`;
+      } else {
+        $("studentPoints").textContent = "0";
+        $("studentRank").textContent = "—";
+        $("studentEvents").textContent = "0";
+        $("studentDays").textContent = "0";
+        $("profilePointsReadOnly").value = "0 نقطة";
+        $("profileRankReadOnly").value = "لسه مسجلش حضور";
+      }
+
+      renderLeaderboard(board);
+    }
+
+    // ==========================================
+    // الليدر بورد
+    // ==========================================
+    $("leaderSearch").addEventListener("input", () => renderLeaderboard());
+    $("leaderSort").addEventListener("change", () => renderLeaderboard());
+
+    function renderLeaderboard(board) {
+      board = board || buildLeaderboard();
+      const q = normalizeName($("leaderSearch").value);
+      const sort = $("leaderSort").value;
+
+      let list = board.filter(p => !q || normalizeName(p.name).includes(q));
+      if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name, "ar"));
+
+      const container = $("leaderboardList");
+      if (!list.length) {
+        container.innerHTML = `<div class="empty"><i class="fa-solid fa-users"></i>لا يوجد أعضاء</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(p => {
+        let rankCls = "";
+        if (p.rank === 1) rankCls = "gold";
+        else if (p.rank === 2) rankCls = "silver";
+        else if (p.rank === 3) rankCls = "bronze";
+        
+        const myName = currentUser ? (localStorage.getItem("name_" + currentUser.uid) || "") : "";
+        const isMe = normalizeName(p.name) === normalizeName(myName);
+        
+        return `
+          <div class="leader-row" style="${isMe ? 'background:var(--card2);border-radius:12px' : ''}">
+            <div class="rank ${rankCls}">${p.rank}</div>
+            <div class="leader-info">
+              <div class="leader-name">${escapeHtml(p.name)}${isMe ? " (أنت)" : ""}</div>
+              <div class="leader-meta">${p.events} حضور • ${p.days} يوم</div>
+            </div>
+            <div class="leader-points">${p.points}</div>
+          </div>`;
+      }).join("");
+    }
+
+    // ==========================================
+    // تابات
+    // ==========================================
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        const target = tab.dataset.tab;
+        $("leaderboardTab").classList.toggle("hidden", target !== "leaderboard");
+        $("profileTab").classList.toggle("hidden", target !== "profile");
+      });
+    });
+
+    // ==========================================
+    // Utils
+    // ==========================================
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+  </script>
+</body>
+</html>
